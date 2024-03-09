@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Pegawai</title>
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+</style>
+</head>
+<body>
+
+<table id="pegawaiTable">
+  <thead>
+    <tr>
+      <th>Nama Pegawai</th>
+      <th>Jabatan</th>
+      <th>Status</th>
+      <th>Gaji Pokok</th>
+      <th>Tunjangan Jabatan</th>
+      <th>BPJS</th>
+      <th>Tunjangan Keluarga</th>
+      <th>Total Gaji</th>
+    </tr>
+  </thead>
+  <tbody id="pegawaiBody">
+
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="7">Total Gaji</th>
+      <td id="totalGaji"></td>
+    </tr>
+  </tfoot>
+</table>
+
+<script>
+  function GajiPokok(jabatan) {
+    let gajiPokok;
+    if (jabatan === "Manager") {
+      gajiPokok = 15000000;
+    } else if (jabatan === "Asisten Manager") {
+      gajiPokok = 10000000;
+    } else if (jabatan === "Staff") {
+      gajiPokok = 5000000;
+    }
+    return gajiPokok;
+  }
+
+  function TunjanganJabatan(gajiPokok) {
+    return 0.15 * gajiPokok;
+  }
+
+  function BPJS(gajiPokok) {
+    return 0.10 * gajiPokok;
+  }
+
+  function TunjanganKeluarga(gajiPokok, status) {
+    return status === "Menikah" ? 0.20 * gajiPokok : 0;
+  }
+
+  function tambahDataPegawai(nama, jabatan, status) {
+    let tabel = document.getElementById("pegawaiBody");
+    let newRow = tabel.insertRow();
+
+    let gajiPokok = GajiPokok(jabatan);
+    let tunjanganJabatan = TunjanganJabatan(gajiPokok);
+    let bpjs = BPJS(gajiPokok);
+    let tunjanganKeluarga = TunjanganKeluarga(gajiPokok, status);
+    let totalGaji = gajiPokok + tunjanganJabatan + tunjanganKeluarga - bpjs;
+
+    let cellNama = newRow.insertCell(0);
+    let cellJabatan = newRow.insertCell(1);
+    let cellStatus = newRow.insertCell(2);
+    let cellGajiPokok = newRow.insertCell(3);
+    let cellTunjanganJabatan = newRow.insertCell(4);
+    let cellBPJS = newRow.insertCell(5);
+    let cellTunjanganKeluarga = newRow.insertCell(6);
+    let cellTotalGaji = newRow.insertCell(7);
+
+    cellNama.innerHTML = nama;
+    cellJabatan.innerHTML = jabatan;
+    cellStatus.innerHTML = status;
+    cellGajiPokok.innerHTML = "Rp" + gajiPokok.toLocaleString('id-ID');
+    cellTunjanganJabatan.innerHTML = "Rp" + tunjanganJabatan.toLocaleString('id-ID');
+    cellBPJS.innerHTML = "Rp" + bpjs.toLocaleString('id-ID');
+    cellTunjanganKeluarga.innerHTML = "Rp" + tunjanganKeluarga.toLocaleString('id-ID');
+    cellTotalGaji.innerHTML = "Rp" + totalGaji.toLocaleString('id-ID');
+
+    updateTotalGaji();
+  }
+
+  function updateTotalGaji() {
+    let totalGaji = 0;
+    let tabel = document.getElementById("pegawaiBody");
+    for (let i = 0; i < tabel.rows.length; i++) {
+      let gajiPokok = parseInt(tabel.rows[i].cells[3].innerHTML.replace("Rp", "").replace(/\./g, ""));
+      let tunjanganJabatan = parseInt(tabel.rows[i].cells[4].innerHTML.replace("Rp", "").replace(/\./g, ""));
+      let bpjs = parseInt(tabel.rows[i].cells[5].innerHTML.replace("Rp", "").replace(/\./g, ""));
+      let tunjanganKeluarga = parseInt(tabel.rows[i].cells[6].innerHTML.replace("Rp", "").replace(/\./g, ""));
+      totalGaji += (gajiPokok + tunjanganJabatan + tunjanganKeluarga - bpjs);
+    }
+    document.getElementById("totalGaji").innerHTML = "Rp" + totalGaji.toLocaleString('id-ID');
+  }
+
+  tambahDataPegawai("Ridwan", "Manager", "Menikah");
+</script>
+
+</body>
+</html>
